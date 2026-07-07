@@ -53,9 +53,9 @@ class JoinLeaveLog(commands.Cog):
 				forward_channel = await server.fetch_channel(forward_channel_id)
 
 			if joined:
-				await forward_channel.send(f"Member {member.mention} joined")
+				await forward_channel.send(f"Member {member.mention} joined", allowed_mentions=discord.AllowedMentions(users=False, roles=False))
 			else:
-				await forward_channel.send(f"Member {member.mention} left")
+				await forward_channel.send(f"Member {member.mention} left", allowed_mentions=discord.AllowedMentions(users=False, roles=False))
 
 
 def setup(bot):
