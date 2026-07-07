@@ -12,6 +12,20 @@ from .database import JoinLeaveLogDatabase
 database = JoinLeaveLogDatabase()
 
 
+class JoinLeaveLogView(discord.ui.DesignerView):
+	def __init__(self, member: discord.Member, joined: bool):
+		super().__init__(timeout=None)
+
+		container = discord.ui.Container(colour=discord.Colour.green() if joined else discord.Colour.red())
+		super().add_item(container)
+
+		title_text = discord.ui.TextDisplay(f"### Member {'Joined' if joined else 'Left'}")
+		container.add_item(title_text)
+
+		body_text = discord.ui.TextDisplay(f"Member {member.mention} ({member.name}) {'joined' if joined else 'left'}")
+		container.add_item(body_text)
+
+
 class JoinLeaveLog(commands.Cog):
 	command_group = SlashCommandGroup("joinleavelog", "Join/leave log", contexts=CONTEXTS, integration_types=INTEGRATION_TYPES)
 
@@ -52,10 +66,7 @@ class JoinLeaveLog(commands.Cog):
 				journal.log(f"Couldn't find channel {forward_channel_id} in cache, fetching from Discord", 7, component=LOG_COMPONENT)
 				forward_channel = await server.fetch_channel(forward_channel_id)
 
-			if joined:
-				await forward_channel.send(f"Member {member.mention} joined", allowed_mentions=discord.AllowedMentions(users=False, roles=False))
-			else:
-				await forward_channel.send(f"Member {member.mention} left", allowed_mentions=discord.AllowedMentions(users=False, roles=False))
+			await forward_channel.send(view=JoinLeaveLogView(member, joined), allowed_mentions=discord.AllowedMentions(users=False, roles=False))
 
 
 def setup(bot):
